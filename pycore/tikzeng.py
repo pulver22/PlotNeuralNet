@@ -20,6 +20,10 @@ def to_cor():
 \def\FcColor{rgb:blue,5;red,2.5;white,5}
 \def\FcReluColor{rgb:blue,5;red,5;white,4}
 \def\SoftmaxColor{rgb:magenta,5;black,7}   
+\def\BatchNormColor{rgb:blue,1;black,0.3}
+\def\ActivationColor{rgb:magenta,5;black,0.3}
+\def\SumColor{rgb:green,5;black,0.3}
+\def\PaddingColor{rgb:green,2;blue,2;black,0.6}
 """
 
 def to_begin():
@@ -75,7 +79,69 @@ def to_ConvConvRelu( name, s_filer=256, n_filer=(64,64), offset="(0,0,0)", to="(
     };
 """
 
+# BatchNorm
+def to_BatchNorm(name, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, opacity=0.5, caption=" "):
+    return r"""
+\pic[shift={ """+ offset +""" }] at """+ to +""" 
+    {Box={
+        name="""+name+""",
+        caption="""+ caption +r""",
+        fill=\BatchNormColor,
+        opacity="""+ str(opacity) +""",
+        height="""+ str(height) +""",
+        width="""+ str(width) +""",
+        depth="""+ str(depth) +"""
+        }
+    };
+"""
 
+def to_Activation(name, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, opacity=0.5, caption=" "):
+    return r"""
+\pic[shift={ """+ offset +""" }] at """+ to +""" 
+    {Box={
+        name="""+name+""",
+        caption="""+ caption +r""",
+        fill=\ActivationColor,
+        opacity="""+ str(opacity) +""",
+        height="""+ str(height) +""",
+        width="""+ str(width) +""",
+        depth="""+ str(depth) +"""
+        }
+    };
+"""
+
+# MLP
+def to_FC(name, units, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, opacity=0.5, caption=" "):
+    return r"""
+\pic[shift={ """+ offset +""" }] at """+ to +""" 
+    {Box={
+        name="""+name+""",
+        zlabel="""+ str(units) +""",
+        caption="""+ caption +r""",
+        fill=\UnpoolColor,
+        opacity="""+ str(opacity) +""",
+        height="""+ str(height) +""",
+        width="""+ str(width) +""",
+        depth="""+ str(depth) +"""
+        }
+    };
+"""
+
+# Pool
+def to_Padding(name, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, opacity=0.5, caption=" "):
+    return r"""
+\pic[shift={ """+ offset +""" }] at """+ to +""" 
+    {Box={
+        name="""+name+""",
+        caption="""+ caption +r""",
+        fill=\PaddingColor,
+        opacity="""+ str(opacity) +""",
+        height="""+ str(height) +""",
+        width="""+ str(width) +""",
+        depth="""+ str(depth) +"""
+        }
+    };
+"""
 
 # Pool
 def to_Pool(name, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, opacity=0.5, caption=" "):
@@ -93,7 +159,7 @@ def to_Pool(name, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, 
     };
 """
 
-# unpool4, 
+# Ftopool4, 
 def to_UnPool(name, offset="(0,0,0)", to="(0,0,0)", width=1, height=32, depth=32, opacity=0.5, caption=" "):
     return r"""
 \pic[shift={ """+ offset +""" }] at """+ to +""" 
@@ -178,6 +244,44 @@ def to_skip( of, to, pos=1.25):
 -- node {\copymidarrow}("""+of+"""-top)
 -- node {\copymidarrow}("""+to+"""-top)
 -- node {\copymidarrow} ("""+to+"""-north);
+"""
+
+def to_skip_bottom( of, to, pos=5):
+    return r"""
+\path ("""+ of +"""-southeast) -- ("""+ of +"""-northeast) coordinate[pos="""+ str(pos) +"""] ("""+ of +"""-top) ;
+\path ("""+ to +"""-north)  -- ("""+ to +"""-south)  coordinate[pos="""+ str(pos) +"""] ("""+ to +"""-bottom) ;
+\draw [copyconnection]  ("""+of+"""-north)  
+-- node {\copymidarrow}("""+of+"""-top)
+-- node {\copymidarrow}("""+to+"""-bottom)
+-- node {\copymidarrow} ("""+to+"""-south);
+"""
+
+def to_add( name, to, offset="(0,0,0)", opacity=0.4, caption=''):
+    return r"""
+\pic[shift={"""+ offset +"""}] at """+ to +""" 
+    {Ball={
+        name=""" + name +""",
+        caption="""+ caption +""",
+        fill=\SumColor,
+        opacity="""+ str(opacity) +""",
+        radius=2.5,
+        logo=$+$
+        }
+    };
+"""
+
+def to_split( name, to, offset="(0,0,0)", opacity=0.4, caption=''):
+    return r"""
+    \pic[shift={"""+ offset +"""}] at """+ to +""" 
+    {Ball={
+        name=""" + name +""",
+        caption="""+ caption +""",
+        fill=\SumColor,
+        opacity="""+ str(opacity) +""",
+        radius=2.5,
+        logo=$-$
+        }
+    };
 """
 
 def to_end():
